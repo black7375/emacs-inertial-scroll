@@ -71,7 +71,7 @@
 
 ;;; Code:
 
-(require 'cl)
+(require 'cl-lib)
 (require 'deferred)
 
 ;;; Customize
@@ -109,7 +109,7 @@ effect is shown.")
 ;;; Macros
 
 (defmacro inertias-jslambda (args &rest body)
-  (let ((argsyms (loop for i in args collect (gensym))))
+  (let ((argsyms (cl-loop for i in args collect (gensym))))
   `(lambda (,@argsyms)
      (lexical-let (callee)
        (setq callee (lambda( ,@args ) ,@body))
@@ -148,7 +148,7 @@ effect is shown.")
          (,chain
           (,dstart (deferred:new)))
        (setq ,chain ,dstart)
-       ,@(loop for i in argbody
+       ,@(cl-loop for i in argbody
                collect
                (inertias-thread-line wait-time chain i))
        (deferred:callback ,dstart))))
@@ -258,10 +258,10 @@ value.")
       (inertias-start-scroll-thread window))
      (t
       (let ((vel (cdr pair)))
-        (if (and (> 0 (signum (* vel init-vel))) ; negative direction
+        (if (and (> 0 (cl-signum (* vel init-vel))) ; negative direction
                  (> (abs vel) (abs (* 0.5 init-vel)))) ; want to stop ?
             (inertias-brake-scrolling vel window) ; stop
-          (incf (cdr pair) init-vel) ; acceleration
+          (cl-incf (cdr pair) init-vel) ; acceleration
           ))))))
 
 (defun inertias-start-scroll-thread (window)
@@ -280,18 +280,18 @@ value.")
               (scrnum 0)
               (prev-window-start (window-start window)))
          (setq last-time (float-time))
-         (incf pos (* dt vel)) ; pos += vel * dt
+         (cl-incf pos (* dt vel)) ; pos += vel * dt
          (setq scrnum
                (cond
                 ((< 0 vel) ; upward scrolling
-                 (decf vel frc) ; vel -= frc * dt
+                 (cl-decf vel frc) ; vel -= frc * dt
                  (floor pos))
                 (t ; downward scrolling
-                 (incf vel frc) ; vel += frc * dt
+                 (cl-incf vel frc) ; vel += frc * dt
                  (ceiling pos))))
-         (decf pos scrnum) ; saving residual value
+         (cl-decf pos scrnum) ; saving residual value
          (cond
-          ((or (>= 0 (signum (* prev-vel vel)))
+          ((or (>= 0 (cl-signum (* prev-vel vel)))
                (not (window-live-p window)))
            (inertias-stop window))
           (t
@@ -341,7 +341,7 @@ value.")
   ;; for follow-mode
   (when (and (symbol-plist 'follow-mode)
              (buffer-local-value 'follow-mode (window-buffer window)))
-    (loop for i in (get-buffer-window-list (window-buffer window))
+    (cl-loop for i in (get-buffer-window-list (window-buffer window))
           unless (eq window i)
           do (ignore-errors
                (with-selected-window i
