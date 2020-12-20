@@ -1,4 +1,4 @@
-;;; inertial-scroll.el --- global minor mode for inertial scrolling
+;;; inertial-scroll.el --- global minor mode for inertial scrolling -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2010  SAKURAI Masashi
 
@@ -155,30 +155,35 @@ effect is shown.")
 
 ;;; Commands
 
+;;;###autoload
 (defun inertias-up ()
   (interactive)
   (inertias-scrolling
    (* inertias-initial-velocity (window-normal-size (selected-window)))
    (selected-window)))
 
+;;;###autoload
 (defun inertias-down ()
   (interactive)
   (inertias-scrolling
    (- (* inertias-initial-velocity (window-normal-size (selected-window))))
    (selected-window)))
 
+;;;###autoload
 (defun inertias-up-wheel ()
   (interactive)
   (inertias-scrolling
    inertias-initial-velocity-wheel
    (selected-window)))
 
+;;;###autoload
 (defun inertias-down-wheel ()
   (interactive)
   (inertias-scrolling
    (- inertias-initial-velocity-wheel)
    (selected-window)))
 
+;;;###autoload
 (defun inertias-stop (&optional window)
   (interactive)
   (unless window
