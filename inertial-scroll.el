@@ -1,4 +1,4 @@
-;;; inertial-scroll.el --- global minor mode for inertial scrolling 
+;;; inertial-scroll.el --- global minor mode for inertial scrolling
 
 ;; Copyright (C) 2010  SAKURAI Masashi
 
@@ -26,7 +26,7 @@
 
 ;;; Installation:
 
-;; This program needs deferred.el 
+;; This program needs deferred.el
 ;; [http://github.com/kiwanami/emacs-deferred/blob/master/deferred.el].
 
 ;; Put following lines in your .emacs file.
@@ -44,7 +44,7 @@
 ;; (setq inertias-friction 120)
 ;; (setq inertias-update-time 50)
 ;; (setq inertias-rest-coef 0.1)
-;; (setq inertias-global-minor-mode-map 
+;; (setq inertias-global-minor-mode-map
 ;;       (inertias-define-keymap
 ;;        '(
 ;;          ;; Mouse wheel scrolling
@@ -65,7 +65,7 @@
 ;;  Added an option switch: inertias-rebound-flash.
 ;;  Added mouse wheel scrolling (thx @peccu).
 ;;  Modified default parameters.
-;; 
+;;
 ;; Revision 1.0  2010/10/08  sakurai
 ;;  First release.
 
@@ -104,7 +104,6 @@ scrolling needs more time to stop.")
 "Rebounding flash effect at buffer edges. If nil, no flash
 effect is shown.")
 
-
 
 ;;; Macros
 
@@ -126,19 +125,19 @@ effect is shown.")
       (let ((condition (cadr line))
             (body (cddr line))
             (retsym (gensym)))
-        `(setq ,chain 
-               (deferred:nextc ,chain 
+        `(setq ,chain
+               (deferred:nextc ,chain
                  (inertias-jslambda
-                  (x) (if ,condition 
-                          (deferred:nextc 
+                  (x) (if ,condition
+                          (deferred:nextc
                             (let ((,retsym (progn ,@body)))
                               (if (deferred-p ,retsym) ,retsym
                                 (deferred:wait ,wait-time)))
                             callee)))))))
      ;; statement
      (t
-      `(setq ,chain 
-             (deferred:nextc ,chain 
+      `(setq ,chain
+             (deferred:nextc ,chain
                (lambda (x) ,line)))))))
 
 (defmacro inertias-thread (wait-time &rest argbody)
@@ -153,7 +152,6 @@ effect is shown.")
                (inertias-thread-line wait-time chain i))
        (deferred:callback ,dstart))))
 
-
 
 ;;; Commands
 
@@ -165,7 +163,7 @@ effect is shown.")
 
 (defun inertias-down ()
   (interactive)
-  (inertias-scrolling 
+  (inertias-scrolling
    (- (* inertias-initial-velocity (window-normal-size (selected-window))))
    (selected-window)))
 
@@ -187,18 +185,17 @@ effect is shown.")
     (setq window (selected-window)))
   (inertias-window-velocity-clear window))
 
-
 
 ;;; Minor mode
 
 (defun inertias-define-keymap (keymap-list &optional prefix)
   (let ((map (make-sparse-keymap)))
-    (mapc 
+    (mapc
      (lambda (i)
        (define-key map
          (if (stringp (car i))
-             (read-kbd-macro 
-              (if prefix 
+             (read-kbd-macro
+              (if prefix
                   (replace-regexp-in-string "prefix" prefix (car i))
                 (car i)))
            (car i))
@@ -208,7 +205,7 @@ effect is shown.")
 
 (defvar inertias-prefix-key "C-c ' ")
 (defvar inertias-minor-mode-child-map (make-sparse-keymap))
-(defvar inertias-global-minor-mode-map 
+(defvar inertias-global-minor-mode-map
   (inertias-define-keymap
    '(
      ("prefix u"     . inertias-down)
@@ -227,7 +224,7 @@ effect is shown.")
   :group 'inertias-global-mode
   (if inertias-global-minor-mode
       (progn
-        (set-keymap-parent inertias-minor-mode-child-map 
+        (set-keymap-parent inertias-minor-mode-child-map
                            inertias-global-minor-mode-map)
         (run-hooks 'inertias-global-minor-mode-hook))))
 
@@ -265,7 +262,7 @@ value.")
           ))))))
 
 (defun inertias-start-scroll-thread (window)
-  (lexical-let* ((pos 0) (window window) pair 
+  (lexical-let* ((pos 0) (window window) pair
                  (last-time (float-time)))
     (inertias-thread
      inertias-update-time
